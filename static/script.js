@@ -1,4 +1,22 @@
+var canvas = document.getElementById('annotation_canvas');
+var ctx = canvas.getContext('2d');
+var boxes = [];
+var annotated_container = document.getElementById('annotated_container');
+first_image = document.querySelector('.photo.selected')
+
+if (first_image) {
+    var image = new Image();
+    image.onload = function() {
+        canvas.width = this.naturalWidth;
+        canvas.height = this.naturalHeight;
+        ctx.drawImage(this, 0, 0);
+    };
+    image.src = first_image.src;
+}
+
 function selectPhoto(element) {
+    boxes = [];
+    annotated_container.innerHTML = '';
     // Remove 'selected' class from all photos
     var photos = document.getElementsByClassName('photo');
     for (var i = 0; i < photos.length; i++) {
@@ -22,25 +40,9 @@ function selectPhoto(element) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    var canvas = document.getElementById('annotation_canvas');
-    var ctx = canvas.getContext('2d');
-    
-    // Initially draw the first image (assuming the first image is selected by default)
-    var selectedImage = document.querySelector('.photo.selected');
-    if (selectedImage) {
-        var image = new Image();
-        image.onload = function() {
-            canvas.width = this.naturalWidth;
-            canvas.height = this.naturalHeight;
-            ctx.drawImage(this, 0, 0);
-        };
-        image.src = selectedImage.src;
-    }
-
     var isDrawing = false;
     var startX, startY;
-    var boxes = []; // Array to store drawn boxes
-
+    
     canvas.addEventListener('mousedown', function(e) {
         isDrawing = true;
         var rect = canvas.getBoundingClientRect();
@@ -50,13 +52,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     canvas.addEventListener('mousemove', function(e) {
         if (!isDrawing) return;
+        
+        current_image = document.querySelector('.photo.selected')
 
         var rect = canvas.getBoundingClientRect();
         var x = (e.clientX - rect.left) * (canvas.width / rect.width);
         var y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0, 0);
+        ctx.drawImage(current_image, 0, 0);
 
         // Redraw all existing rectangles
         boxes.forEach(function(box) {
@@ -75,6 +79,13 @@ document.addEventListener('DOMContentLoaded', function() {
         var width = (e.clientX - rect.left) * (canvas.width / rect.width) - startX;
         var height = (e.clientY - rect.top) * (canvas.height / rect.height) - startY;
         boxes.push({ x: startX, y: startY, width: width, height: height });
+
+        annotated_container.innerHTML = ''; // Clear previous content
+        boxes.forEach(function(box, index) {
+            var paragraph = document.createElement('p');
+            paragraph.textContent = 'Box ' + (index + 1) + ': x=' + box.x + ', y=' + box.y + ', width=' + box.width + ', height=' + box.height;
+            annotated_container.appendChild(paragraph);
+        });
     });
 
     canvas.addEventListener('mouseleave', function(e) {
@@ -86,6 +97,5 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.strokeStyle = 'red';
         ctx.strokeRect(x, y, width, height);
     }
-
 });
 
