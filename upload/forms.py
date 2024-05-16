@@ -8,4 +8,4 @@ class UploadForm(ModelForm):
     
     class Meta:
         model = Photo 
-        fields = ["title", "image"]
+        fields = ["title", "image", "image_objects"]

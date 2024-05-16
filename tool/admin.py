@@ -8,15 +8,14 @@ class PhotoInline(admin.TabularInline):  # Use admin.StackedInline for a differe
     model = Photo
     extra = 0  # Specify the number of extra forms to display
 
+class PhotoAdmin(admin.ModelAdmin):
+    readonly_fields = ('id','created_at', 'customer',)
+
 class CustomerAdmin(admin.ModelAdmin):
     inlines = [PhotoInline]
     readonly_fields = ('user',)  # You can keep this line if you have other readonly fields
 
 admin.site.register(Customer, CustomerAdmin)
-
-class PhotoAdmin(admin.ModelAdmin):
-    readonly_fields = ('id','created_at', 'customer',)
-
 admin.site.register(Photo, PhotoAdmin)
 admin.site.register(job_request)
 

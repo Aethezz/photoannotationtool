@@ -1,7 +1,8 @@
 var canvas = document.getElementById('annotation_canvas');
 var ctx = canvas.getContext('2d');
 var boxes = [];
-var annotated_container = document.getElementById('annotated_container');
+var annotation_container = document.getElementById('annotation_container');
+var annotated_image_container = document.getElementById('annotated_image_container');
 first_image = document.querySelector('.photo.selected')
 
 if (first_image) {
@@ -16,7 +17,8 @@ if (first_image) {
 
 function selectPhoto(element) {
     boxes = [];
-    annotated_container.innerHTML = '';
+    annotation_container.innerHTML = '';
+    annotated_image_container.innerHTML = '';
     // Remove 'selected' class from all photos
     var photos = document.getElementsByClassName('photo');
     for (var i = 0; i < photos.length; i++) {
@@ -52,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     canvas.addEventListener('mousemove', function(e) {
         if (!isDrawing) return;
-        
+
         current_image = document.querySelector('.photo.selected')
 
         var rect = canvas.getBoundingClientRect();
@@ -73,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     canvas.addEventListener('mouseup', function(e) {
         isDrawing = false;
+        current_image = document.querySelector('.photo.selected')
 
         // Record box coordinates
         var rect = canvas.getBoundingClientRect();
@@ -80,11 +83,26 @@ document.addEventListener('DOMContentLoaded', function() {
         var height = (e.clientY - rect.top) * (canvas.height / rect.height) - startY;
         boxes.push({ x: startX, y: startY, width: width, height: height });
 
-        annotated_container.innerHTML = ''; // Clear previous content
+        annotation_container.innerHTML = ''; // Clear previous content
+        annotated_image_container.innerHTML = '';
+
         boxes.forEach(function(box, index) {
             var paragraph = document.createElement('p');
-            paragraph.textContent = 'Box ' + (index + 1) + ': x=' + box.x + ', y=' + box.y + ', width=' + box.width + ', height=' + box.height;
-            annotated_container.appendChild(paragraph);
+            
+            paragraph.textContent = 'Box ' + (index + 1) + ':' + box.x + ' x ' + box.y + ', width=' + box.width + ', height=' + box.height;
+            annotation_container.appendChild(paragraph);
+            
+            var annotated_image = document.createElement('img'); 
+            annotated_image.src = current_image.src; 
+
+            annotated_image.style.width = box.width + 'px'; 
+            annotated_image.style.height = box.height + 'px'; 
+
+            annotated_image.style.objectFit = 'none'; // Ensure the image is not stretched or resized
+            annotated_image.style.objectPosition = '-' + box.x + 'px -' + box.y + 'px'; // Position the image within its container
+
+            
+            annotated_image_container.appendChild(annotated_image);
         });
     });
 
@@ -92,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
         isDrawing = false;
     });
 
-    // Function to draw a box
     function drawBox(x, y, width, height) {
         ctx.strokeStyle = 'red';
         ctx.strokeRect(x, y, width, height);

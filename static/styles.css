@@ -83,4 +83,8 @@ ul {
     height: 600px;
 }
 
+#annotated_image_container {
+    width: 300px;
+    height: auto;
+}
 
