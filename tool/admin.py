@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer, Photo, job_request
+from .models import Customer, Photo, job_request, AnnotatedImage
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
@@ -32,3 +32,4 @@ class UserAdmin(BaseUserAdmin):
 # Re-register the User model with the updated UserAdmin class
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(AnnotatedImage)

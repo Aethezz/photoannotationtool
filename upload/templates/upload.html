@@ -13,7 +13,7 @@
     <a href="{% url 'view' %}">View current</a>
     <div class="upload-container">
         <h1>Upload an image</h1>
-        <form method = "Post" enctype="multipart/form-data">
+        <form method = "POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{form.as_p}}
             <br>

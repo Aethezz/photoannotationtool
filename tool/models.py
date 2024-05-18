@@ -20,4 +20,10 @@ class job_request(models.Model):
     photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)
 
 class AnnotatedImage(models.Model):
-    photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)
+    annotated_image = models.ImageField(null=True, blank=True, upload_to='images')
+    start_x = models.IntegerField(null=True)
+    start_y = models.IntegerField(null=True)
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+    
+    #photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)

@@ -10,4 +10,5 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('logout/', logout, name='logout'),
     path('view', views.view_images, name='view'),
+    path('submit-annotation/', views.submit_annotation, name='submit_annotation'),
 ]

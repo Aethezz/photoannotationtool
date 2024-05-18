@@ -23,10 +23,12 @@ function selectPhoto(element) {
     var photos = document.getElementsByClassName('photo');
     for (var i = 0; i < photos.length; i++) {
         photos[i].classList.remove('selected');
+        photos[i].removeAttribute('name');
     }
 
     // Add 'selected' class to the clicked photo
     element.classList.add('selected');
+    element.setAttribute('name', 'current_image');
 
     // Update canvas with the selected image
     var canvas = document.getElementById('annotation_canvas');
@@ -116,3 +118,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+document.getElementById("submit-button").addEventListener('click', function() { 
+    boxes.forEach(box => {
+        console.log(`x: ${box.x}, y: ${box.y}, width: ${box.width}, height: ${box.height}`);
+    });
+    
+    fetch('/submit-annotation/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')  // Add CSRF token for Django
+        },
+        body: JSON.stringify({ boxes: boxes })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+})
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
