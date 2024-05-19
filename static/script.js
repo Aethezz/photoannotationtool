@@ -23,12 +23,10 @@ function selectPhoto(element) {
     var photos = document.getElementsByClassName('photo');
     for (var i = 0; i < photos.length; i++) {
         photos[i].classList.remove('selected');
-        photos[i].removeAttribute('name');
     }
 
     // Add 'selected' class to the clicked photo
     element.classList.add('selected');
-    element.setAttribute('name', 'current_image');
 
     // Update canvas with the selected image
     var canvas = document.getElementById('annotation_canvas');
@@ -103,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
             annotated_image.style.objectFit = 'none'; // Ensure the image is not stretched or resized
             annotated_image.style.objectPosition = '-' + box.x + 'px -' + box.y + 'px'; // Position the image within its container
 
-            
             annotated_image_container.appendChild(annotated_image);
         });
     });
@@ -119,6 +116,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.getElementById("submit-button").addEventListener('click', function() { 
+    currentImage = document.querySelector('.photo.selected');
+    currentImageSrc = currentImage.src;
+    
     boxes.forEach(box => {
         console.log(`x: ${box.x}, y: ${box.y}, width: ${box.width}, height: ${box.height}`);
     });
@@ -129,7 +129,7 @@ document.getElementById("submit-button").addEventListener('click', function() {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')  // Add CSRF token for Django
         },
-        body: JSON.stringify({ boxes: boxes })
+        body: JSON.stringify({ boxes: boxes, currentImageSrc: currentImageSrc })
     })
     .then(response => response.json())
     .then(data => {

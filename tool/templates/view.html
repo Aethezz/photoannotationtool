@@ -14,7 +14,7 @@
         <ul class="photo-container">
         {% for photo in customer_photos %}
             {% if forloop.first %}
-            <li><img src="{{ photo.image.url }}" alt="Photo" class="photo selected" name="current_image" onclick="selectPhoto(this)"></li>
+            <li><img src="{{ photo.image.url }}" alt="Photo" class="photo selected" onclick="selectPhoto(this)"></li>
             {% else %}
             <li><img src="{{ photo.image.url }}" alt="Photo" class="photo" onclick="selectPhoto(this)"></li>
             {% endif %}

@@ -15,15 +15,15 @@ class Photo(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     image_objects = models.JSONField(default=list)
 
-class job_request(models.Model):
+class jobRequest(models.Model):
     customer = models.ForeignKey(Customer, null=True, on_delete=models.CASCADE)
     photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)
 
 class AnnotatedImage(models.Model):
-    annotated_image = models.ImageField(null=True, blank=True, upload_to='images')
+    annotated_image = models.ImageField(null=True, blank=True, upload_to='annotated_images')
     start_x = models.IntegerField(null=True)
     start_y = models.IntegerField(null=True)
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)
-    
-    #photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)
+    photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, null=True, blank=True, on_delete=models.CASCADE)
