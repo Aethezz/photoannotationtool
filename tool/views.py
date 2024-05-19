@@ -13,6 +13,9 @@ def Homepage(request):
     return render(request, "home.html")
 
 def view_images(request):
+    return render(request, 'view.html')
+
+def annotate(request):
     
     customer = Customer.objects.get(pk=request.session['customer_id'])
     # Query all photos related to this customer
@@ -22,7 +25,7 @@ def view_images(request):
         first_photo = customer_photos.first()
         first_photo_url = first_photo.image.url
 
-    return render(request, 'view.html', {'customer': customer, 'customer_photos': customer_photos, 'first_photo_url': first_photo_url})
+    return render(request, 'annotate.html', {'customer': customer, 'customer_photos': customer_photos, 'first_photo_url': first_photo_url})
 
 def submit_annotation(request):
     if request.method == 'POST':
@@ -51,7 +54,8 @@ def submit_annotation(request):
             annotated_image_instance = AnnotatedImage(
                 start_x=start_x, start_y=start_y, width=width, height=height, customer=customer
             )
-            annotated_image_instance.annotated_image.save(f'cropped_{start_x}_{start_y}_{width}_{height}.jpg', ContentFile(annotated_image_io.read()), save=True)
+            annotated_image_instance.annotated_image.save(f'annotated_{start_x}_{start_y}_{width}_{height}.jpg', ContentFile(annotated_image_io.read()), save=True)
+
 
         return JsonResponse({'status': 'success', 'data': boxes})
     return JsonResponse({'status': 'failed', 'message': 'Invalid request'}, status=400)
