@@ -41,6 +41,6 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 class AnnotatedImageAdmin(admin.ModelAdmin):
-    readonly_fields = ('start_x', 'start_y', 'width', 'height')
+    readonly_fields = ('start_x', 'start_y', 'width', 'height', 'photo', 'customer',)
 
 admin.site.register(AnnotatedImage, AnnotatedImageAdmin)

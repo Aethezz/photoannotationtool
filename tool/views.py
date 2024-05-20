@@ -16,16 +16,19 @@ def view_images(request):
     return render(request, 'view.html')
 
 def annotate(request):
-    
     customer = Customer.objects.get(pk=request.session['customer_id'])
-    # Query all photos related to this customer
-    customer_photos = customer.photo_set.all()  # Assuming "photo_set" is the related name
-
+    customer_photos = customer.photo_set.filter(completed=False) 
+    photo_ids = []
     if customer_photos.exists():
-        first_photo = customer_photos.first()
-        first_photo_url = first_photo.image.url
+        photo_ids = [photo.id for photo in customer_photos]
+    else:
+        pass
 
-    return render(request, 'annotate.html', {'customer': customer, 'customer_photos': customer_photos, 'first_photo_url': first_photo_url})
+    return render(request, 'annotate.html', {
+        'customer': customer, 
+        'customer_photos': customer_photos, 
+        'photo_ids': photo_ids,
+    })
 
 def submit_annotation(request):
     if request.method == 'POST':
@@ -33,7 +36,11 @@ def submit_annotation(request):
         boxes = data.get('boxes', [])
         image_src = data.get('currentImageSrc', '')
         customer = Customer.objects.get(id=request.session['customer_id'])
-        #photo = Photo.objects.get(id=request.session['photo_id'])
+        
+        photo_id = data.get('photoId', '')
+        photo = Photo.objects.get(id=photo_id)
+        photo.completed = True
+        photo.save()
 
         response = requests.get(image_src)
         img = Image.open(BytesIO(response.content))
@@ -43,8 +50,6 @@ def submit_annotation(request):
             start_y = box.get('y')
             width = box.get('width')
             height = box.get('height')
-            # Do something with these values, e.g., save to database, print, etc.
-            print(f'x: {start_x}, y: {start_y}, width: {width}, height: {height}')
 
             annotated_image = img.crop((start_x, start_y, start_x+width, start_y+height))
             annotated_image_io = BytesIO()
@@ -52,10 +57,11 @@ def submit_annotation(request):
             annotated_image_io.seek(0)
             
             annotated_image_instance = AnnotatedImage(
-                start_x=start_x, start_y=start_y, width=width, height=height, customer=customer
+                start_x=start_x, start_y=start_y, width=width, height=height, customer=customer, photo=photo,
             )
             annotated_image_instance.annotated_image.save(f'annotated_{start_x}_{start_y}_{width}_{height}.jpg', ContentFile(annotated_image_io.read()), save=True)
 
+        
 
         return JsonResponse({'status': 'success', 'data': boxes})
     return JsonResponse({'status': 'failed', 'message': 'Invalid request'}, status=400)

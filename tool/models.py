@@ -13,7 +13,8 @@ class Photo(models.Model):
     image = models.ImageField(null=True, blank=True, upload_to='photos')
     customer = models.ForeignKey(Customer, null=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    image_objects = models.JSONField(default=list)
+    image_objects = models.JSONField(blank=True, default=list)
+    completed = models.BooleanField(default=False)
 
 class jobRequest(models.Model):
     customer = models.ForeignKey(Customer, null=True, on_delete=models.CASCADE)

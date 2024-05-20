@@ -29,8 +29,6 @@ function selectPhoto(element) {
     element.classList.add('selected');
 
     // Update canvas with the selected image
-    var canvas = document.getElementById('annotation_canvas');
-    var ctx = canvas.getContext('2d');
     var image = new Image();
     image.onload = function() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -116,28 +114,66 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.getElementById("submit-button").addEventListener('click', function() { 
-    currentImage = document.querySelector('.photo.selected');
-    currentImageSrc = currentImage.src;
-    
-    boxes.forEach(box => {
-        console.log(`x: ${box.x}, y: ${box.y}, width: ${box.width}, height: ${box.height}`);
-    });
-    
-    fetch('/submit-annotation/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')  // Add CSRF token for Django
-        },
-        body: JSON.stringify({ boxes: boxes, currentImageSrc: currentImageSrc })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
+    if (boxes.length > 0) {
+        currentImage = document.querySelector('.photo.selected');
+        currentImageSrc = currentImage.src;
+        const photoId = currentImage.getAttribute('data-photo-id');
+
+        boxes.forEach(box => {
+            console.log(`x: ${box.x}, y: ${box.y}, width: ${box.width}, height: ${box.height}`);
+        });
+        
+        fetch('/submit-annotation/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')  // Add CSRF token for Django
+            },
+            body: JSON.stringify({ 
+                boxes: boxes, 
+                currentImageSrc: currentImageSrc,
+                photoId: photoId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            boxes = []
+            document.getElementById("annotation_container").innerHTML = "";
+            document.getElementById("annotated_image_container").innerHTML = "";
+            
+            const currentIndex = Array.from(document.querySelectorAll('.photo')).indexOf(currentImage);
+            
+            // Get the next photo element in line
+            const nextIndex = (currentIndex + 1) % document.querySelectorAll('.photo').length;
+            const nextImage = document.querySelectorAll('.photo')[nextIndex];
+
+            // Add the 'selected' class to the next photo in line
+            nextImage.classList.add('selected');
+
+            // Update the canvas to display the image associated with the newly selected photo
+            const currentImageSrc = nextImage.src;
+            
+            var image = new Image();
+            image.onload = function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.width = image.naturalWidth;
+                canvas.height = image.naturalHeight;
+                ctx.drawImage(image, 0, 0);
+            };
+            image.src = currentImageSrc;    
+        
+            const completedImage = document.querySelector(`[data-photo-id="${photoId}"]`);
+            if (completedImage) {
+                completedImage.parentElement.remove();  // Remove the <li> element containing the image
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    } else {
+    console.error('Error: Boxes array is empty. Please annotate the image before submitting.');
+    }
 })
 
 function getCookie(name) {
