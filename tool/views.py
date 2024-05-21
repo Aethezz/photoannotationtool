@@ -64,7 +64,5 @@ def submit_annotation(request):
             )
             annotated_image_instance.annotated_image.save(f'annotated_{start_x}_{start_y}_{width}_{height}.jpg', ContentFile(annotated_image_io.read()), save=True)
 
-        
-
         return JsonResponse({'status': 'success', 'data': boxes})
     return JsonResponse({'status': 'failed', 'message': 'Invalid request'}, status=400)
