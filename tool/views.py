@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import Customer, Photo, AnnotatedImage
+from .models import Customer, Photo, AnnotatedImage, Object
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.base import ContentFile
@@ -18,14 +18,17 @@ def view_images(request):
 def annotate(request):
     customer = Customer.objects.get(pk=request.session['customer_id'])
     customer_photos = customer.photo_set.filter(completed=False) 
+    photo_objects_dict = {photo: Object.objects.filter(photo=photo) for photo in customer_photos}
     photo_ids = []
+    
     if customer_photos.exists():
         photo_ids = [photo.id for photo in customer_photos]
     else:
         pass
 
     return render(request, 'annotate.html', {
-        'customer': customer, 
+        'customer': customer,
+        'photo_objects_dict': photo_objects_dict,
         'customer_photos': customer_photos, 
         'photo_ids': photo_ids,
     })

@@ -1,27 +1,41 @@
 from django.contrib import admin
-from .models import Customer, Photo, jobRequest, AnnotatedImage
+from .models import Customer, Photo, jobRequest, AnnotatedImage, Object
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from django.utils.html import format_html
 
 # Register your models here.
-class PhotoInline(admin.TabularInline):  # Use admin.StackedInline for a different layout
+class ObjectInline(admin.TabularInline):
+    model = Object
+    extra = 0  
+
+class PhotoInline(admin.TabularInline): 
     model = Photo
-    extra = 0  # Specify the number of extra forms to display
+    extra = 0  
+    inlines = [ObjectInline]
+
+class ObjectAdmin(admin.ModelAdmin):
+    list_display = ('name', 'photo_name', 'id',)
+    list_display_links = ('name', 'photo_name', 'id',)
+    readonly_fields = ('photo', 'id',)
+
+    def photo_name(self, obj):
+        return obj.photo.title
 
 class PhotoAdmin(admin.ModelAdmin):
+    inlines = [ObjectInline]
     list_display = ('title', 'customer_name', 'created_at', 'id',)
     readonly_fields = ('id', 'created_at', 'customer',)
     list_display_links = ('title', 'customer_name',)
 
     def customer_name(self, obj):
         return obj.customer.username
-        
+
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('username', 'email', 'id',)
     inlines = [PhotoInline]
-    readonly_fields = ('user', )  # You can keep this line if you have other readonly fields
+    readonly_fields = ('user', ) 
     
+admin.site.register(Object, ObjectAdmin)
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Photo, PhotoAdmin)
 admin.site.register(jobRequest)

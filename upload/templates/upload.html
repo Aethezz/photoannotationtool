@@ -7,6 +7,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script type="text/javascript">
+        function addObjectField() {
+            var container = document.getElementById('object-fields');
+            var fieldHTML = `
+                <div class="object-field">
+                    <input type="text" name="objects[]" placeholder="Object Name" />
+                    <button type="button" onclick="removeObjectField(this)">Remove</button>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', fieldHTML);
+        }
+
+        function removeObjectField(button) {
+            var field = button.parentElement;
+            field.remove();
+        }
+    </script>
 </head>
 <body>
     <a href="{% url 'logout' %}">Logout</a>
@@ -16,6 +32,15 @@
         <form method = "POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{form.as_p}}
+            <br>
+
+            <div id="object-fields">
+                <div class="object-field">
+                    <input type="text" name="objects[]" placeholder="Object Name" />
+                    <button type="button" onclick="removeObjectField(this)">Remove</button>
+                </div>
+            </div>
+            <button type="button" onclick="addObjectField()">Add Object</button>
             <br>
             <button type="submit">Submit</button>
         </form>

@@ -13,9 +13,12 @@ class Photo(models.Model):
     image = models.ImageField(null=True, blank=True, upload_to='photos')
     customer = models.ForeignKey(Customer, null=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    image_objects = models.JSONField(blank=True, default=list)
     completed = models.BooleanField(default=False)
 
+class Object(models.Model):
+    photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    
 class jobRequest(models.Model):
     customer = models.ForeignKey(Customer, null=True, on_delete=models.CASCADE)
     photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)
@@ -28,3 +31,4 @@ class AnnotatedImage(models.Model):
     height = models.IntegerField(null=True)
     photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, null=True, blank=True, on_delete=models.CASCADE)
+
