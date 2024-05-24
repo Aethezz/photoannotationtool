@@ -21,6 +21,7 @@ def annotate(request):
     photo_objects_dict = {photo: Object.objects.filter(photo=photo) for photo in customer_photos}
     photo_ids = []
     
+    print(photo_objects_dict)
     if customer_photos.exists():
         photo_ids = [photo.id for photo in customer_photos]
     else:

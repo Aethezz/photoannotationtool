@@ -2,7 +2,8 @@ var canvas = document.getElementById('annotation_canvas');
 var ctx = canvas.getContext('2d');
 var boxes = [];
 var annotation_container = document.getElementById('annotation_container');
-var annotated_image_container = document.getElementById('annotated_image_container');
+var annotated_images_container = document.getElementById('annotated_images_container');
+var objects_container = document.getElementById('objects_container')
 first_image = document.querySelector('.photo.selected')
 
 if (first_image) {
@@ -13,12 +14,31 @@ if (first_image) {
         ctx.drawImage(this, 0, 0);
     };
     image.src = first_image.src;
+
+
+}
+
+function updateObjects() {
+
+}
+
+function loadPhoto(imageSrc, canvas) {
+    var ctx = canvas.getContext('2d');
+    var image = new Image();
+
+    image.onload = function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = this.naturalWidth;
+        canvas.height = this.naturalHeight;
+        ctx.drawImage(this, 0, 0);
+    };
+    image.src = imageSrc.src;
 }
 
 function selectPhoto(element) {
     boxes = [];
     annotation_container.innerHTML = '';
-    annotated_image_container.innerHTML = '';
+    annotated_images_container.innerHTML = '';
     // Remove 'selected' class from all photos
     var photos = document.getElementsByClassName('photo');
     for (var i = 0; i < photos.length; i++) {
@@ -29,14 +49,7 @@ function selectPhoto(element) {
     element.classList.add('selected');
 
     // Update canvas with the selected image
-    var image = new Image();
-    image.onload = function() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        canvas.width = this.naturalWidth;
-        canvas.height = this.naturalHeight;
-        ctx.drawImage(this, 0, 0);
-    };
-    image.src = element.src;
+    loadPhoto(element, canvas);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -73,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     canvas.addEventListener('mouseup', function(e) {
         isDrawing = false;
-        current_image = document.querySelector('.photo.selected')
+        current_image = document.querySelector('.photo.selected');
 
         // Record box coordinates
         var rect = canvas.getBoundingClientRect();
@@ -82,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         boxes.push({ x: startX, y: startY, width: width, height: height });
 
         annotation_container.innerHTML = ''; // Clear previous content
-        annotated_image_container.innerHTML = '';
+        annotated_images_container.innerHTML = '';
 
         boxes.forEach(function(box, index) {
             var paragraph = document.createElement('p');
@@ -91,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
             annotation_container.appendChild(paragraph);
             
             var annotated_image = document.createElement('img'); 
+            annotated_image.setAttribute('name', 'abc');
             annotated_image.src = current_image.src; 
 
             annotated_image.style.width = box.width + 'px'; 
@@ -99,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
             annotated_image.style.objectFit = 'none'; // Ensure the image is not stretched or resized
             annotated_image.style.objectPosition = '-' + box.x + 'px -' + box.y + 'px'; // Position the image within its container
 
-            annotated_image_container.appendChild(annotated_image);
+            annotated_images_container.appendChild(annotated_image);
         });
     });
 
@@ -140,7 +154,7 @@ document.getElementById("submit-button").addEventListener('click', function() {
             console.log('Success:', data);
             boxes = []
             document.getElementById("annotation_container").innerHTML = "";
-            document.getElementById("annotated_image_container").innerHTML = "";
+            document.getElementById("annotated_images_container").innerHTML = "";
             
             const currentIndex = Array.from(document.querySelectorAll('.photo')).indexOf(currentImage);
             
@@ -154,14 +168,7 @@ document.getElementById("submit-button").addEventListener('click', function() {
             // Update the canvas to display the image associated with the newly selected photo
             const currentImageSrc = nextImage.src;
             
-            var image = new Image();
-            image.onload = function() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                canvas.width = image.naturalWidth;
-                canvas.height = image.naturalHeight;
-                ctx.drawImage(image, 0, 0);
-            };
-            image.src = currentImageSrc;    
+            loadPhoto(currentImageSrc, canvas);  
         
             const completedImage = document.querySelector(`[data-photo-id="${photoId}"]`);
             if (completedImage) {
@@ -174,6 +181,16 @@ document.getElementById("submit-button").addEventListener('click', function() {
     } else {
     console.error('Error: Boxes array is empty. Please annotate the image before submitting.');
     }
+})
+
+document.getElementById("reset-button").addEventListener('click', function() {
+    annotation_container.innerHTML = '';
+    annotated_images_container.innerHTML = '';
+    boxes = []
+    current_image = document.querySelector('.photo.selected');
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    loadPhoto(current_image, canvas);o
 })
 
 function getCookie(name) {
