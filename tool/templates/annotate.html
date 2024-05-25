@@ -11,9 +11,10 @@
     <h1>Customer: {{ customer.username }}</h1>
     <h2>Photos:</h2>
     <div class="container-wrapper">
-        <div id="photo-objects-data" data-photo-objects="{{ photo_objects_json|escapejs }}"></div>
-        <div class="objects_container">
+        <div id="photo-objects-data" data-photo-objects=/'{{ photo_objects_dict }}' class="hidden"></div>
+        <div>
             <h3>Associated Objects:</h3>
+            <div id="objects_container"></div>
         </div>
         <ul class="photo-container">
         {% for photo in customer_photos %}

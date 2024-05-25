@@ -4,6 +4,10 @@ var boxes = [];
 var annotation_container = document.getElementById('annotation_container');
 var annotated_images_container = document.getElementById('annotated_images_container');
 var objects_container = document.getElementById('objects_container');
+const dataElement = document.getElementById('photo-objects-data');
+const rawJsonString = dataElement.getAttribute('data-photo-objects');
+const photoObjectsDict = JSON.parse(rawJsonString);
+
 first_image = document.querySelector('.photo.selected');
 
 if (first_image) {
@@ -19,10 +23,58 @@ if (first_image) {
 
 function updateObjects(imageSrc) {
     const photoId = imageSrc.getAttribute('photo-id');
-    if (objects_container) {
-        objects_container.innerHTML = '';
+    var objects_container = document.getElementById('objects_container');
+
+    objects_container.innerHTML = '';
+    
+    if (photoObjectsDict.hasOwnProperty(photoId)) {
+        var objects = photoObjectsDict[photoId];
+ 
+        // Check if value is an array
+        if (Array.isArray(objects)) {
+            objects.forEach(function(item) {
+                var label = document.createElement('label');
+                var radioButton = document.createElement('input');
+                radioButton.type = 'radio';
+                radioButton.name = 'selected_item';
+                radioButton.value = item;
+                // Add a class for styling purposes (optional)
+                radioButton.classList.add('selectable-item');
+                // Attach change event listener to each radio button
+                radioButton.addEventListener('change', function() {
+                    // Example: log the selected item to the console
+                    console.log('Selected item:', this.value);
+                    // Add your logic here for handling the selected item
+                    // For example, you could add a CSS class to indicate selection
+                    // Or trigger another function to handle the selected item
+                });
+                label.appendChild(radioButton);
+                label.appendChild(document.createTextNode(item));
+                objects_container.appendChild(label);
+                objects_container.appendChild(document.createElement('br')); // Add line break to separate items vertically
+            });
+        } else {
+            // Create a radio button for non-array values
+            var label = document.createElement('label');
+            var radioButton = document.createElement('input');
+            radioButton.type = 'radio';
+            radioButton.name = 'selected_item';
+            radioButton.value = objects;
+            // Add a class for styling purposes (optional)
+            radioButton.classList.add('selectable-item');
+            // Attach change event listener to the radio button
+            radioButton.addEventListener('change', function() {
+                // Example: log the selected item to the console
+                console.log('Selected item:', this.value);
+                // Add your logic here for handling the selected item
+                // For example, you could add a CSS class to indicate selection
+                // Or trigger another function to handle the selected item
+            });
+            label.appendChild(radioButton);
+            label.appendChild(document.createTextNode(objects));
+            objects_container.appendChild(label);
+        }
     }
-    console.log(photoId);
 }
 
 function loadPhoto(imageSrc, canvas) {
@@ -126,8 +178,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function drawBox(x, y, width, height) {
+        var strokeWidth = Math.min(canvas.width, canvas.height) * 0.003; // Adjust the factor (0.01) as needed
+
         ctx.strokeStyle = 'red';
-        ctx.strokeRect(x, y, width, height);
+        ctx.lineWidth = strokeWidth; // Set the stroke width
+        ctx.strokeRect(x, y, width, height)
     }
 });
 
@@ -170,9 +225,7 @@ document.getElementById("submit-button").addEventListener('click', function() {
             nextImage.classList.add('selected');
 
             // Update the canvas to display the image associated with the newly selected photo
-            const currentImageSrc = nextImage.src;
-            
-            loadPhoto(currentImageSrc, canvas);  
+            loadPhoto(nextImage, canvas);  
         
             const completedImage = document.querySelector(`[photo-id="${photoId}"]`);
             if (completedImage) {
@@ -194,7 +247,7 @@ document.getElementById("reset-button").addEventListener('click', function() {
     current_image = document.querySelector('.photo.selected');
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    loadPhoto(current_image, canvas);o
+    loadPhoto(current_image, canvas);
 })
 
 function getCookie(name) {
