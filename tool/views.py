@@ -18,9 +18,13 @@ def view_images(request):
 def annotate(request):
     customer = Customer.objects.get(pk=request.session['customer_id'])
     customer_photos = customer.photo_set.filter(completed=False) 
-    photo_objects_dict = {photo: Object.objects.filter(photo=photo) for photo in customer_photos}
-    photo_ids = []
+    photo_objects_dict = {
+        photo.id: list(Object.objects.filter(photo=photo).values_list('name', flat=True))
+        for photo in customer_photos
+    }
     
+    photo_ids = []
+
     print(photo_objects_dict)
     if customer_photos.exists():
         photo_ids = [photo.id for photo in customer_photos]
@@ -29,7 +33,7 @@ def annotate(request):
 
     return render(request, 'annotate.html', {
         'customer': customer,
-        'photo_objects_dict': photo_objects_dict,
+        'photo_objects_dict': json.dumps(photo_objects_dict),
         'customer_photos': customer_photos, 
         'photo_ids': photo_ids,
     })

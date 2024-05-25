@@ -3,8 +3,8 @@ var ctx = canvas.getContext('2d');
 var boxes = [];
 var annotation_container = document.getElementById('annotation_container');
 var annotated_images_container = document.getElementById('annotated_images_container');
-var objects_container = document.getElementById('objects_container')
-first_image = document.querySelector('.photo.selected')
+var objects_container = document.getElementById('objects_container');
+first_image = document.querySelector('.photo.selected');
 
 if (first_image) {
     var image = new Image();
@@ -14,12 +14,15 @@ if (first_image) {
         ctx.drawImage(this, 0, 0);
     };
     image.src = first_image.src;
-
-
+    updateObjects(first_image)
 }
 
-function updateObjects() {
-
+function updateObjects(imageSrc) {
+    const photoId = imageSrc.getAttribute('photo-id');
+    if (objects_container) {
+        objects_container.innerHTML = '';
+    }
+    console.log(photoId);
 }
 
 function loadPhoto(imageSrc, canvas) {
@@ -50,6 +53,7 @@ function selectPhoto(element) {
 
     // Update canvas with the selected image
     loadPhoto(element, canvas);
+    updateObjects(element);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -131,7 +135,7 @@ document.getElementById("submit-button").addEventListener('click', function() {
     if (boxes.length > 0) {
         currentImage = document.querySelector('.photo.selected');
         currentImageSrc = currentImage.src;
-        const photoId = currentImage.getAttribute('data-photo-id');
+        const photoId = currentImage.getAttribute('photo-id');
 
         boxes.forEach(box => {
             console.log(`x: ${box.x}, y: ${box.y}, width: ${box.width}, height: ${box.height}`);
@@ -170,7 +174,7 @@ document.getElementById("submit-button").addEventListener('click', function() {
             
             loadPhoto(currentImageSrc, canvas);  
         
-            const completedImage = document.querySelector(`[data-photo-id="${photoId}"]`);
+            const completedImage = document.querySelector(`[photo-id="${photoId}"]`);
             if (completedImage) {
                 completedImage.parentElement.remove();  // Remove the <li> element containing the image
             }
