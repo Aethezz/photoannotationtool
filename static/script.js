@@ -29,51 +29,33 @@ function updateObjects(imageSrc) {
     
     if (photoObjectsDict.hasOwnProperty(photoId)) {
         var objects = photoObjectsDict[photoId];
- 
-        // Check if value is an array
-        if (Array.isArray(objects)) {
-            objects.forEach(function(item) {
-                var label = document.createElement('label');
-                var radioButton = document.createElement('input');
-                radioButton.type = 'radio';
-                radioButton.name = 'selected_item';
-                radioButton.value = item;
-                // Add a class for styling purposes (optional)
-                radioButton.classList.add('selectable-item');
-                // Attach change event listener to each radio button
-                radioButton.addEventListener('change', function() {
-                    // Example: log the selected item to the console
-                    console.log('Selected item:', this.value);
-                    // Add your logic here for handling the selected item
-                    // For example, you could add a CSS class to indicate selection
-                    // Or trigger another function to handle the selected item
-                });
-                label.appendChild(radioButton);
-                label.appendChild(document.createTextNode(item));
-                objects_container.appendChild(label);
-                objects_container.appendChild(document.createElement('br')); // Add line break to separate items vertically
-            });
-        } else {
-            // Create a radio button for non-array values
+
+        objects.forEach(obj => {
             var label = document.createElement('label');
             var radioButton = document.createElement('input');
             radioButton.type = 'radio';
-            radioButton.name = 'selected_item';
-            radioButton.value = objects;
+            radioButton.name = 'object';
+            radioButton.value = obj;
             // Add a class for styling purposes (optional)
-            radioButton.classList.add('selectable-item');
+            radioButton.classList.add('photo_objects');
             // Attach change event listener to the radio button
-            radioButton.addEventListener('change', function() {
-                // Example: log the selected item to the console
-                console.log('Selected item:', this.value);
-                // Add your logic here for handling the selected item
-                // For example, you could add a CSS class to indicate selection
-                // Or trigger another function to handle the selected item
-            });
+            
             label.appendChild(radioButton);
-            label.appendChild(document.createTextNode(objects));
+            label.appendChild(document.createTextNode(obj));
             objects_container.appendChild(label);
-        }
+            objects_container.appendChild(document.createElement('br')); // Add line break to separate items vertically
+        });
+        
+        const radioButtons = objects_container.querySelectorAll('input[name="object"]');
+        radioButtons.forEach(radioButton => {
+            radioButton.addEventListener('change', () => {
+                // Remove 'selected' class from all radio buttons
+                radioButtons.forEach(rb => rb.classList.remove('selected'));
+                
+                // Add 'selected' class to the currently selected radio button
+                radioButton.classList.add('selected');
+            });
+        });
     }
 }
 
@@ -94,6 +76,7 @@ function selectPhoto(element) {
     boxes = [];
     annotation_container.innerHTML = '';
     annotated_images_container.innerHTML = '';
+    
     // Remove 'selected' class from all photos
     var photos = document.getElementsByClassName('photo');
     for (var i = 0; i < photos.length; i++) {
@@ -108,7 +91,7 @@ function selectPhoto(element) {
     updateObjects(element);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     var isDrawing = false;
     var startX, startY;
     
@@ -133,6 +116,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Redraw all existing rectangles
         boxes.forEach(function(box) {
+            
+            // move object_name labelling to drawBox function instead 
+            var object_name = document.querySelector('.photo_objects.selected').getAttribute('value');
+            ctx.font = '12px Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText(object_name, box.x, box.y - 5); // Positioning text above the box
+            
             drawBox(box.x, box.y, box.width, box.height);
         });
 
@@ -151,25 +141,27 @@ document.addEventListener('DOMContentLoaded', function() {
         boxes.push({ x: startX, y: startY, width: width, height: height });
 
         annotation_container.innerHTML = ''; // Clear previous content
-        annotated_images_container.innerHTML = '';
+        annotated_images_container.innerHTML = ''; // Clear previous content
 
         boxes.forEach(function(box, index) {
             var paragraph = document.createElement('p');
-            
             paragraph.textContent = 'Box ' + (index + 1) + ':' + box.x + ' x ' + box.y + ', width=' + box.width + ', height=' + box.height;
             annotation_container.appendChild(paragraph);
             
             var annotated_image = document.createElement('img'); 
             annotated_image.setAttribute('name', 'abc');
             annotated_image.src = current_image.src; 
-
             annotated_image.style.width = box.width + 'px'; 
             annotated_image.style.height = box.height + 'px'; 
-
             annotated_image.style.objectFit = 'none'; // Ensure the image is not stretched or resized
             annotated_image.style.objectPosition = '-' + box.x + 'px -' + box.y + 'px'; // Position the image within its container
-
             annotated_images_container.appendChild(annotated_image);
+            
+            // move object_name labelling to drawBox function instead 
+            var object_name = document.querySelector('.photo_objects.selected').getAttribute('value');
+            ctx.font = '12px Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText(object_name, box.x, box.y - 5);
         });
     });
 
@@ -177,8 +169,8 @@ document.addEventListener('DOMContentLoaded', function() {
         isDrawing = false;
     });
 
-    function drawBox(x, y, width, height) {
-        var strokeWidth = Math.min(canvas.width, canvas.height) * 0.003; // Adjust the factor (0.01) as needed
+    function drawBox(x, y, width, height) { 
+        var strokeWidth = Math.min(canvas.width, canvas.height) * 0.003; // Adjust the factor as needed
 
         ctx.strokeStyle = 'red';
         ctx.lineWidth = strokeWidth; // Set the stroke width
@@ -186,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-document.getElementById("submit-button").addEventListener('click', function() { 
+document.getElementById("submit-button").addEventListener('click', () => { 
     if (boxes.length > 0) {
         currentImage = document.querySelector('.photo.selected');
         currentImageSrc = currentImage.src;
@@ -240,7 +232,7 @@ document.getElementById("submit-button").addEventListener('click', function() {
     }
 })
 
-document.getElementById("reset-button").addEventListener('click', function() {
+document.getElementById("reset-button").addEventListener('click', () => {
     annotation_container.innerHTML = '';
     annotated_images_container.innerHTML = '';
     boxes = []
@@ -256,6 +248,7 @@ function getCookie(name) {
         const cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
             const cookie = cookies[i].trim();
+            
             // Does this cookie string begin with the name we want?
             if (cookie.substring(0, name.length + 1) === (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
