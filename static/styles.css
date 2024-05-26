@@ -88,4 +88,16 @@ ul {
     height: auto;
 }
 
+#message_container {
+    text-align: center;
+    bottom: 0; /* Positions it at the bottom of the page */
+    left: 0; /* Aligns it to the left */
+    width: 50%; /* Takes full width of the viewport */
+    max-height: 20%; /* Limits the height to 20% of the viewport */
+    overflow-y: auto; /* Adds vertical scroll if content overflows */
+    background-color: #f8f9fa; /* Light background color */
+    border-top: 1px solid #dee2e6; /* Top border for separation */
+    padding: 10px; /* Padding for spacing inside the container */
+    box-sizing: border-box; /* Includes padding and border in element's total width and height */
+}
 

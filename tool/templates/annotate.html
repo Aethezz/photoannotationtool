@@ -4,32 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Annotation</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
-    <h1>Customer: {{ customer.username }}</h1>
-    <h2>Photos:</h2>
     <div class="container-wrapper">
         <div id="photo-objects-data" data-photo-objects='{{ photo_objects_dict }}'></div>
         <div class="objects_wrapper">
-            <h3>Associated Objects:</h3>
+            <h3>Objects:</h3>
             <div id="objects_container"></div>
         </div>
         <ul class="photo-container">
-        {% for photo in customer_photos %}
-            {% if forloop.first %}
-            <li><img src="{{ photo.image.url }}" alt="Photo" class="photo selected" photo-id="{{ photo.id }}" onclick="selectPhoto(this)"></li>
-            {% else %}
-            <li><img src="{{ photo.image.url }}" alt="Photo" class="photo" photo-id="{{ photo.id }}" onclick="selectPhoto(this)"></li>
-            {% endif %}
-        {% endfor %}
+            <h2>Photos:</h2>
+            {% for photo in customer_photos %}
+                {% if forloop.first %}
+                <li><img src="{{ photo.image.url }}" alt="Photo" class="photo selected" photo-id="{{ photo.id }}" onclick="selectPhoto(this)"></li>
+                {% else %}
+                <li><img src="{{ photo.image.url }}" alt="Photo" class="photo" photo-id="{{ photo.id }}" onclick="selectPhoto(this)"></li>
+                {% endif %}
+            {% endfor %}
         </ul>
         <div id="current_image_container">
             <canvas id="annotation_canvas"></canvas>
         </div>
-        <div id="annotation_container"></div>
-        <div id="annotated_images_container"></div>
+        <div class="annotation_wrapper">
+            <h2>Annotations</h2>
+            <div id="annotation_container"></div>
+            <div id="annotated_images_container"></div>
+        </div>
+        <div id="message_container"></div>
         
     </div>
     <button type="button" id="submit-button">Submit</button>

@@ -32,7 +32,6 @@ def annotate(request):
         pass
 
     return render(request, 'annotate.html', {
-        'customer': customer,
         'photo_objects_dict': json.dumps(photo_objects_dict),
         'customer_photos': customer_photos, 
         'photo_ids': photo_ids,
@@ -58,6 +57,7 @@ def submit_annotation(request):
             start_y = box.get('y')
             width = box.get('width')
             height = box.get('height')
+            object = box.get('obj')
 
             annotated_image = img.crop((start_x, start_y, start_x+width, start_y+height))
             annotated_image_io = BytesIO()
@@ -65,6 +65,7 @@ def submit_annotation(request):
             annotated_image_io.seek(0)
             
             annotated_image_instance = AnnotatedImage(
+                #object=object, 
                 start_x=start_x, start_y=start_y, width=width, height=height, customer=customer, photo=photo,
             )
             annotated_image_instance.annotated_image.save(f'annotated_{start_x}_{start_y}_{width}_{height}.jpg', ContentFile(annotated_image_io.read()), save=True)

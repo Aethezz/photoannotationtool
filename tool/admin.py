@@ -23,9 +23,9 @@ class ObjectAdmin(admin.ModelAdmin):
 
 class PhotoAdmin(admin.ModelAdmin):
     inlines = [ObjectInline]
-    list_display = ('title', 'customer_name', 'created_at', 'id',)
+    list_display = ('title', 'customer_name', 'completed', 'created_at', 'id',)
     readonly_fields = ('id', 'created_at', 'customer',)
-    list_display_links = ('title', 'customer_name',)
+    list_display_links = ('title', 'customer_name', 'completed',)
 
     def customer_name(self, obj):
         return obj.customer.username

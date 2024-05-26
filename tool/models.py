@@ -29,6 +29,8 @@ class AnnotatedImage(models.Model):
     start_y = models.IntegerField(null=True)
     width = models.IntegerField(null=True)
     height = models.IntegerField(null=True)
+    object = models.ForeignKey(Object, null=True, on_delete=models.CASCADE)
     photo = models.ForeignKey(Photo, null=True, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, null=True, blank=True, on_delete=models.CASCADE)
+
 
