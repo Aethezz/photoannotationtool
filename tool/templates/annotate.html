@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Annotation</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script>
+        const photoObjectsDict = JSON.parse('{{ photo_objects_dict|escapejs }}');
+    </script>
 </head>
 <body>
     <div class="container-wrapper">
-        <div id="photo-objects-data" data-photo-objects='{{ photo_objects_dict }}'></div>
         <div class="objects_wrapper">
             <h3>Objects:</h3>
             <div id="objects_container"></div>
@@ -30,7 +32,6 @@
         <div class="annotation_wrapper">
             <h2>Annotations</h2>
             <div id="annotation_container"></div>
-            <div id="annotated_images_container"></div>
         </div>
         <div id="message_container"></div>
         

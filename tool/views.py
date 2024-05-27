@@ -16,10 +16,10 @@ def view_images(request):
     return render(request, 'view.html')
 
 def annotate(request):
-    customer = Customer.objects.get(pk=request.session['customer_id'])
+    customer = Customer.objects.get(id=request.session['customer_id'])
     customer_photos = customer.photo_set.filter(completed=False) 
     photo_objects_dict = {
-        photo.id: list(Object.objects.filter(photo=photo).values_list('name', flat=True))
+        photo.id: list(Object.objects.filter(photo=photo).values_list('id', 'name'))
         for photo in customer_photos
     }
     
@@ -57,7 +57,9 @@ def submit_annotation(request):
             start_y = box.get('y')
             width = box.get('width')
             height = box.get('height')
-            object = box.get('obj')
+            object_id = box.get('id')
+
+            object = Object.objects.get(id=object_id)
 
             annotated_image = img.crop((start_x, start_y, start_x+width, start_y+height))
             annotated_image_io = BytesIO()
@@ -65,8 +67,7 @@ def submit_annotation(request):
             annotated_image_io.seek(0)
             
             annotated_image_instance = AnnotatedImage(
-                #object=object, 
-                start_x=start_x, start_y=start_y, width=width, height=height, customer=customer, photo=photo,
+                object=object, start_x=start_x, start_y=start_y, width=width, height=height, customer=customer, photo=photo,
             )
             annotated_image_instance.annotated_image.save(f'annotated_{start_x}_{start_y}_{width}_{height}.jpg', ContentFile(annotated_image_io.read()), save=True)
 

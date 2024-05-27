@@ -2,12 +2,8 @@ var canvas = document.getElementById('annotation_canvas');
 var ctx = canvas.getContext('2d');
 var boxes = [];
 var annotation_container = document.getElementById('annotation_container');
-var annotated_images_container = document.getElementById('annotated_images_container');
 var objects_container = document.getElementById('objects_container');
 var message_container = document.getElementById('message_container');
-const dataElement = document.getElementById('photo-objects-data');
-const rawJsonString = dataElement.getAttribute('data-photo-objects');
-const photoObjectsDict = JSON.parse(rawJsonString);
 
 first_image = document.querySelector('.photo.selected');
 
@@ -28,36 +24,39 @@ function updateObjects(imageSrc) {
 
     objects_container.innerHTML = '';
     
-    if (photoObjectsDict.hasOwnProperty(photoId)) {
-        var objects = photoObjectsDict[photoId];
-
+    var objects = photoObjectsDict[photoId];
+    
+    if (objects.length > 0) {
         objects.forEach(obj => {
             var label = document.createElement('label');
             var radioButton = document.createElement('input');
             radioButton.type = 'radio';
             radioButton.name = 'object';
-            radioButton.value = obj;
-            // Add a class for styling purposes (optional)
+            radioButton.setAttribute('object_id', obj[0]);
+            radioButton.setAttribute('object_name', obj[1]);
             radioButton.classList.add('photo_objects');
-            // Attach change event listener to the radio button
             
             label.appendChild(radioButton);
-            label.appendChild(document.createTextNode(' ' + obj));
+            label.appendChild(document.createTextNode(' ' + obj[1]));
             objects_container.appendChild(label);
             objects_container.appendChild(document.createElement('br')); // Add line break to separate items vertically
         });
-        
-        const radioButtons = objects_container.querySelectorAll('input[name="object"]');
-        radioButtons.forEach(radioButton => {
-            radioButton.addEventListener('change', () => {
-                // Remove 'selected' class from all radio buttons
-                radioButtons.forEach(rb => rb.classList.remove('selected'));
-                
-                // Add 'selected' class to the currently selected radio button
-                radioButton.classList.add('selected');
-            });
-        });
+    } else {
+        objects_container.innerHTML = "No associated objects";
     }
+    
+    const radioButtons = objects_container.querySelectorAll('input[name="object"]');
+    
+    // Attach change event listener to the radio button
+    radioButtons.forEach(radioButton => {
+        radioButton.addEventListener('change', () => {
+            // Remove 'selected' class from all radio buttons
+            radioButtons.forEach(rb => rb.classList.remove('selected'));
+            
+            // Add 'selected' class to the currently selected radio button
+            radioButton.classList.add('selected');
+        });
+    });
 }
 
 function loadPhoto(imageSrc, canvas) {
@@ -76,7 +75,6 @@ function loadPhoto(imageSrc, canvas) {
 function selectPhoto(element) {
     boxes = [];
     annotation_container.innerHTML = '';
-    annotated_images_container.innerHTML = '';
     
     // Remove 'selected' class from all photos
     var photos = document.getElementsByClassName('photo');
@@ -92,11 +90,38 @@ function selectPhoto(element) {
     updateObjects(element);
 }
 
+function drawDashedBox(x, y, width, height) { 
+        var strokeWidth = Math.min(canvas.width, canvas.height) * 0.003; // Adjust the factor as needed
+        var dashSize = Math.min(canvas.width, canvas.height) * 0.01; 
+        var gapSize = dashSize; // Same as dash size for consistency
+
+        ctx.setLineDash([dashSize, gapSize]);
+        
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = strokeWidth; // Set the stroke width
+        ctx.strokeRect(x, y, width, height)
+    }
+
+function drawSolidBox(x, y, width, height, obj='') {
+    var strokeWidth = Math.min(canvas.width, canvas.height) * 0.003; // Adjust the factor as needed
+    var fontSize = Math.min(canvas.width, canvas.height) * 0.02;
+
+    ctx.setLineDash([]); // Clear line dash
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = strokeWidth; // Set the stroke width
+    ctx.strokeRect(x, y, width, height); // Draw the outline of the rectangle
+
+    ctx.font = fontSize + 'px Arial';
+    ctx.fillStyle = 'darkred';
+    ctx.fillText(obj, x, y + 15);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // implement if object is currently selected
     var isDrawing = false;
+    var mouseIn = false;
     var startX, startY;
-    
+
     canvas.addEventListener('mousedown', (e) => {
         isDrawing = true;
         var rect = canvas.getBoundingClientRect();
@@ -118,46 +143,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Redraw all existing rectangles
         boxes.forEach(function(box) {
-            drawBox(box.x, box.y, box.width, box.height, box.obj);
+            drawSolidBox(box.x, box.y, box.width, box.height, box.obj);
         });
 
         // Draw box
-        drawBox(startX, startY, x - startX, y - startY);
+        drawDashedBox(startX, startY, x - startX, y - startY);
     });
 
     canvas.addEventListener('mouseup', (e) =>  {
         isDrawing = false;
         var current_image = document.querySelector('.photo.selected');
-        var object = document.querySelector('.photo_objects.selected')
-        if (object) {
-            var object_name = object.getAttribute('value');
-            
+        var current_object = document.querySelector('.photo_objects.selected')
+        if (current_object) {
+            var object_name = current_object.getAttribute('object_name');
+            var object_id = current_object.getAttribute('object_id');
+
             // Record box coordinates
             var rect = canvas.getBoundingClientRect();
             var width = (e.clientX - rect.left) * (canvas.width / rect.width) - startX;
             var height = (e.clientY - rect.top) * (canvas.height / rect.height) - startY;
-            boxes.push({ x: startX, y: startY, width: width, height: height, obj: object_name });
+            boxes.push({ x: startX, y: startY, width: width, height: height, obj: object_name, id: object_id });
 
             // Clear previous content
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(current_image, 0, 0);
             annotation_container.innerHTML = ''; 
-            annotated_images_container.innerHTML = ''; 
 
-            boxes.forEach(function(box, index) {
-                drawBox(box.x, box.y, box.width, box.height, box.obj);
+            boxes.forEach((box) => {
+                drawSolidBox(box.x, box.y, box.width, box.height, box.obj);
                 var paragraph = document.createElement('p');
-                paragraph.textContent = 'Object: ' + box.obj + '\n' + 'Box ' + (index + 1) + ': ' + Math.round(box.x) + ' x ' + Math.round(box.y) + ', width=' + Math.round(box.width) + ', height=' + Math.round(box.height);
+                paragraph.textContent = 'Object: ' + box.obj + '\nCorner: ' + Math.round(box.x) + ' x ' + Math.round(box.y) + '\nSize: ' + Math.round(box.width) + ' x ' + Math.round(box.height);
                 annotation_container.appendChild(paragraph);
                 
                 var annotated_image = document.createElement('img'); 
-                annotated_image.setAttribute('name', 'abc');
+                annotated_image.setAttribute('name', box.obj);
+                annotated_image.classList.add('annotated_image');
                 annotated_image.src = current_image.src; 
                 annotated_image.style.width = box.width + 'px'; 
                 annotated_image.style.height = box.height + 'px'; 
                 annotated_image.style.objectFit = 'none'; // Ensure the image is not stretched or resized
                 annotated_image.style.objectPosition = '-' + box.x + 'px -' + box.y + 'px'; // Position the image within its container
-                annotated_images_container.appendChild(annotated_image);
+                annotation_container.appendChild(annotated_image);
             });
         } else {
             loadPhoto(current_image, canvas);
@@ -167,26 +193,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    canvas.addEventListener('mouseleave', (e) => {
-        isDrawing = false;
+    canvas.addEventListener('mouseleave', () => {
+        mouseIn = false;
     });
 
-    function drawBox(x, y, width, height, obj='') { 
-        var strokeWidth = Math.min(canvas.width, canvas.height) * 0.003; // Adjust the factor as needed
-        var fontSize = Math.min(canvas.width, canvas.height) * 0.02;
-        var dashSize = Math.min(canvas.width, canvas.height) * 0.01; // 1% of the smaller dimension
-        var gapSize = dashSize; // Same as dash size for consistent pattern
-
-        ctx.setLineDash([dashSize, gapSize]);
-        
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = strokeWidth; // Set the stroke width
-        ctx.strokeRect(x, y, width, height)
-
-        ctx.font = fontSize + 'px Arial';
-        ctx.fillStyle = 'darkred';
-        ctx.fillText(obj, x, y + 15);
-    }
+    canvas.addEventListener('mouseenter', () => {
+        mouseIn = true;
+    })
 });
 
 document.getElementById("submit-button").addEventListener('click', () => { 
@@ -215,8 +228,7 @@ document.getElementById("submit-button").addEventListener('click', () => {
         .then(data => {
             console.log('Success:', data);
             boxes = []
-            document.getElementById("annotation_container").innerHTML = "";
-            document.getElementById("annotated_images_container").innerHTML = "";
+            annotation_container.innerHTML = "";
             
             const currentIndex = Array.from(document.querySelectorAll('.photo')).indexOf(currentImage);
             
@@ -251,7 +263,6 @@ document.getElementById("submit-button").addEventListener('click', () => {
 
 document.getElementById("reset-button").addEventListener('click', () => {
     annotation_container.innerHTML = '';
-    annotated_images_container.innerHTML = '';
     boxes = []
     current_image = document.querySelector('.photo.selected');
 
