@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             boxes.forEach((box) => {
                 drawSolidBox(box.x, box.y, box.width, box.height, box.obj);
                 var paragraph = document.createElement('p');
-                paragraph.textContent = 'Object: ' + box.obj + '\nCorner: ' + Math.round(box.x) + ' x ' + Math.round(box.y) + '\nSize: ' + Math.round(box.width) + ' x ' + Math.round(box.height);
+                paragraph.innerHTML = 'Object: ' + box.obj + '<br>Corner: ' + Math.round(box.x) + ' x ' + Math.round(box.y) + '<br>Size: ' + Math.round(box.width) + ' x ' + Math.round(box.height);
                 annotation_container.appendChild(paragraph);
                 
                 var annotated_image = document.createElement('img'); 
@@ -257,7 +257,9 @@ document.getElementById("submit-button").addEventListener('click', () => {
             console.error('Error:', error);
         });
     } else {
-    console.error('Error: Boxes array is empty. Please annotate the image before submitting.');
+        error_message = document.createElement('p');
+        error_message.innerHTML = "No annotations to submit";
+        message_container.appendChild(error_message);
     }
 })
 

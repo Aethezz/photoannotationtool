@@ -1,3 +1,9 @@
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
 .topnav {
     background-color: #333;
     overflow: hidden;
@@ -47,7 +53,8 @@
 
 .container-wrapper {
     display: flex;
-    justify-content: space-between; /* Distribute items evenly with even spacing */
+    justify-content: space-evenly;
+    height: 100%;
 }
 
 .photo {
@@ -55,10 +62,16 @@
     height: 200px; /* Allow the height to adjust based on the image's aspect ratio */
 }
 
+.photo-wrapper {
+    width: 75%;
+    background-color: #fff;
+    padding: 10px;
+}
+
 .photo-container {
-    max-width: 250px; /* Minimum width for the container */
+    padding: 3px;
     max-height: 500px; /* Minimum height for the container */
-    align-items: center; /* Center the image vertically */
+    justify-content: center;
     overflow-y: auto; /* Enable vertical scrolling */
     overflow-x: hidden;
 }
@@ -97,49 +110,102 @@
 }
 
 #message_container {
-    position: fixed; /* Position the container relative to the viewport */
+    height: 150px;
     text-align: center; /* Center-align text within the container */
-    bottom: 0; /* Positions it at the bottom of the viewport */
-    left: 0; /* Aligns it to the left */
     width: 100%; /* Takes full width of the viewport */
-    max-height: 20%; /* Limits the height to 20% of the viewport */
     overflow-y: auto; /* Adds vertical scroll if content overflows */
     background-color: #f8f9fa; /* Light background color */
     border-top: 1px solid #dee2e6; /* Top border for separation */
     padding: 10px; /* Padding for spacing inside the container */
     box-sizing: border-box; /* Includes padding and border in element's total width and height */
+    margin-top: 5px;
 }
 
 .left-wrapper {
+    width: 300px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
     text-align: center;
+    background-color: lightgrey;
+    gap: 20px;
 }
 
 .objects_wrapper {
-    width: 100%; /* Ensure wrapper takes full width of the container */
+    width: 75%;
+    height: 175px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center items horizontally */
+    background-color: #fff;
+    padding: 10px;
 }
 
 #objects_container { 
-    width: 250px; /* Fixed width for the container */
-    height: 100px; /* Fixed height for the container */
+    width: 100%;
+    height: 125px; /* Fixed height for the container */
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center items horizontally */
     overflow-y: auto; /* Enable vertical scrolling */
     overflow-x: hidden; /* Hide horizontal overflow */
 }
 
+.right-wrapper {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: lightgrey;
+    gap: 20px;
+}
+
+.annotation_wrapper {
+    width: 75%;
+    background-color: #fff;
+    padding: 10px;
+}
+
 #annotation_container {
-    width: 250px; /* Fixed width for the container */
-    height: 750px; 
+    height: 500px; /* Minimum height for the container */
+    align-items: center; /* Center the image vertically */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden;
+}
+
+.middle-wrapper {
+    border: black solid 1px;
+    padding: 15px 35px;
+}
+
+.middle-wrapper button {
+    padding: 7px 15px;
+    border-radius: 5px;
+    color: white;
+    border: none;
+}
+
+#submit-button {
+    float: right;
+    background-color: rgb(68, 142, 188);
+}
+
+#reset-button {
+    background-color: rgb(212, 189, 87);
+}
+
+.information-container {
+    width: 75%;
+    height: 200px;
     display: flex;
     flex-direction: column;
     align-items: center; /* Center items horizontally */
     overflow-y: auto; /* Enable vertical scrolling */
     overflow-x: hidden; /* Hide horizontal overflow */
+    padding: 10px;
+    background-color: #fff;
 }
+
+
+
