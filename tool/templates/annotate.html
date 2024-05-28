@@ -12,20 +12,22 @@
 </head>
 <body>
     <div class="container-wrapper">
-        <div class="objects_wrapper">
-            <h3>Objects:</h3>
-            <div id="objects_container"></div>
+        <div class="left-wrapper">
+            <div class="objects_wrapper">
+                <h3>Objects:</h3>
+                <div id="objects_container"></div>
+            </div>
+            <h3>Photos:</h3>
+            <ul class="photo-container">
+                {% for photo in customer_photos %}
+                    {% if forloop.first %}
+                    <li><img src="{{ photo.image.url }}" alt="Photo" class="photo selected" photo-id="{{ photo.id }}" onclick="selectPhoto(this)"></li>
+                    {% else %}
+                    <li><img src="{{ photo.image.url }}" alt="Photo" class="photo" photo-id="{{ photo.id }}" onclick="selectPhoto(this)"></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
         </div>
-        <ul class="photo-container">
-            <h2>Photos:</h2>
-            {% for photo in customer_photos %}
-                {% if forloop.first %}
-                <li><img src="{{ photo.image.url }}" alt="Photo" class="photo selected" photo-id="{{ photo.id }}" onclick="selectPhoto(this)"></li>
-                {% else %}
-                <li><img src="{{ photo.image.url }}" alt="Photo" class="photo" photo-id="{{ photo.id }}" onclick="selectPhoto(this)"></li>
-                {% endif %}
-            {% endfor %}
-        </ul>
         <div id="current_image_container">
             <canvas id="annotation_canvas"></canvas>
         </div>
@@ -33,9 +35,9 @@
             <h2>Annotations</h2>
             <div id="annotation_container"></div>
         </div>
-        <div id="message_container"></div>
-        
     </div>
+    <div id="message_container"></div>
+    
     <button type="button" id="submit-button">Submit</button>
     <button type="button" id="reset-button">Reset</button>
     

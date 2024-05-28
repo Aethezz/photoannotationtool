@@ -20,6 +20,13 @@
     float: right;
 }
 
+.login_container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
+
 .topnav a:hover {
     background-color: #ddd;
     color: black;
@@ -40,10 +47,7 @@
 
 .container-wrapper {
     display: flex;
-}
-
-ul {
-    list-style: none;
+    justify-content: space-between; /* Distribute items evenly with even spacing */
 }
 
 .photo {
@@ -57,6 +61,10 @@ ul {
     align-items: center; /* Center the image vertically */
     overflow-y: auto; /* Enable vertical scrolling */
     overflow-x: hidden;
+}
+
+.photo-container li {
+    list-style: none;
 }
 
 .photo:hover {
@@ -74,7 +82,7 @@ ul {
 }
 
 #current_image_container {
-    padding-left: 250px;
+    padding-top: 50px;
 }
 
 #annotation_canvas {
@@ -89,10 +97,11 @@ ul {
 }
 
 #message_container {
-    text-align: center;
-    bottom: 0; /* Positions it at the bottom of the page */
+    position: fixed; /* Position the container relative to the viewport */
+    text-align: center; /* Center-align text within the container */
+    bottom: 0; /* Positions it at the bottom of the viewport */
     left: 0; /* Aligns it to the left */
-    width: 50%; /* Takes full width of the viewport */
+    width: 100%; /* Takes full width of the viewport */
     max-height: 20%; /* Limits the height to 20% of the viewport */
     overflow-y: auto; /* Adds vertical scroll if content overflows */
     background-color: #f8f9fa; /* Light background color */
@@ -101,3 +110,36 @@ ul {
     box-sizing: border-box; /* Includes padding and border in element's total width and height */
 }
 
+.left-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.objects_wrapper {
+    width: 100%; /* Ensure wrapper takes full width of the container */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+}
+
+#objects_container { 
+    width: 250px; /* Fixed width for the container */
+    height: 100px; /* Fixed height for the container */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal overflow */
+}
+
+#annotation_container {
+    width: 250px; /* Fixed width for the container */
+    height: 750px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal overflow */
+}
