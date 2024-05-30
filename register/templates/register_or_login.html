@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'loginstyles.css' %}">
+    <title>Register or Sign In</title>
+</head>
+<body>
+    <div class="container" id="container" data-register-error="{% if register_error_message and action == 'register' %}true{% else %}false{% endif %}">
+        <div class="form-container sign-up">
+            <form method="POST"> 
+                <h1>Create Account</h1>
+                {% csrf_token %}
+                <input type="text" id="username" name="username" placeholder="Username"><br>
+                <input type="email" id="email" name="email" placeholder="Email"><br>
+                <input type="password" id="password" name="password" placeholder="Password"><br><br>
+                <input type="hidden" name="action" value="register">
+                <button type="submit">Register</button>
+                <div class="error-message">{{ register_error_message }}</div>
+            </form>
+        </div> 
+        <div class="form-container sign-in">
+            <form method="POST">
+                <h1>Sign In</h1>
+                {% csrf_token %}
+                <input type="text" id="username" name="username" placeholder="Username"><br>
+                <input type="password" id="password" name="password" placeholder="Password"><br><br>
+                <input type="hidden" name="action" value="login">
+                <button type="submit">Login</button>
+                <div class="error-message">{{ login_error_message }}</div>
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your personal details to use all of site features</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Welcome!</h1>
+                    <p>Register with your personal details to use all of site features</p>
+                    <button class="hidden" id="register">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'loginscript.js' %}"></script>
+</body>
+</html>

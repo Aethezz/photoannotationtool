@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+            height: 75vh;
+            margin: 0; /* Remove default body margin */
+            flex-direction: column;
+        }
+    </style>
 </head>
 <body>
     <h1>You have been logged out</h1>
-    <a href="{% url 'login' %}">Log in again here</a>
+    <a href="{% url 'register_or_login' %}">Log in again here</a>
 </body>
 </html>

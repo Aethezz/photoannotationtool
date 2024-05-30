@@ -12,7 +12,7 @@ import requests
 def Homepage(request):
     return render(request, "home.html")
 
-def view_images(request):
+def view_annotations(request):
     return render(request, 'view.html')
 
 def annotate(request):
