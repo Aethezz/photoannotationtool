@@ -1,0 +1,1 @@
+A photo annotation tool that allows for image data for models to train on. It allows users to register/login, and upload images that they want annotated and keywords of objects within the image that they want annotated. These are then returned to the client, which can be used for whatever training or model they need. 
